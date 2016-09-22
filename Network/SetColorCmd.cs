@@ -8,7 +8,12 @@ namespace LiFXbase
 {
     public class SetColorCmd
     {
-        public SetColorCmd(Message message)
-        { }
+        Header header;
+        public SetColorCmd(byte[] macAddress, bool res_required = false)
+        {
+            header = new Header();
+        }
+
+
     }
 }
