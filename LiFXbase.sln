@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiFXbase", "LiFXbase.csproj", "{AA487F6E-7153-436A-877C-AD26254E8588}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLiFx", "..\TestLiFx\TestLiFx.csproj", "{C7F5DA7C-DBF1-423C-B33D-195A3476E7B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLiFx", "TestLiFx\TestLiFx.csproj", "{C7F5DA7C-DBF1-423C-B33D-195A3476E7B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

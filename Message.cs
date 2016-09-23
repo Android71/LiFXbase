@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace LiFXbase
 {
     [Flags]
-    public enum OriginEnum : Byte
+    public enum ProtocolEnum : UInt16
     {
-        Tagged = 1,
-        Addressable = 2
+        Tagged = 8192,
+        Addressable = 4096,
+        Protocol = 1024
     }
 
     public enum ReservEnum : Byte
@@ -24,30 +25,33 @@ namespace LiFXbase
         public Header()
         {
             Array.Clear(Reserv1, 0, Reserv1.Length);
+           
         }
         /*---------------------------------------------------------------------------*/
 
         #region Frame
 
-        // Origin Tagged and Addressable share 1 byte
-        // ---------------------------------
-        // | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
-        // ---------------------------------
-        //                    |  |   |   |--------> Addressable
-        //                    |  |   |------------> Tagged
-        //                    |__|----------------> Origin
+        // Protocol Origin Tagged and Addressable share 2 byte
+        //--------------------------------------------------------------------------------------------------------
+        //| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+        //--------------------------------------------------------------------------------------------------------
+        //             |    |    |____________________________________________|
+        //             |    |                         |----------------------------> Protocol (Always 1024)
+        //  |    |     |    |------------------------------------------------------> Addressable
+        //  |____|     |-----------------------------------------------------------> Tagged
+        //     |-------------------------------------------------------------------> Origin ( Always 0 )
         //
-        // In current protocol version Origin always 0 
 
         /// <summary>
         /// uint16_t Size of entire message in bytes including this field
         /// </summary>
         public UInt16 Size { get; set; } = 36;
 
+        
         /// <summary>
-        /// origin	uint8_t Message origin indicator: must be zero(0)
+        /// uint16_t Shared BitField Origin, Tagged, Addressable and Protocol must be 0x400 (1024 decimal)
         /// </summary>
-        public OriginEnum Origin { get; set; } = 0;
+        public ProtocolEnum Protocol { get; set; } = ProtocolEnum.Protocol;
 
         /// <summary>
         /// Determines usage of Frame Address target field
@@ -58,13 +62,13 @@ namespace LiFXbase
         /// </summary>
         public bool Tagged
         {
-            get { return (Origin & OriginEnum.Tagged) == OriginEnum.Tagged; }
+            get { return (Protocol & ProtocolEnum.Tagged) == ProtocolEnum.Tagged; }
             set
             {
                 if (value)
-                    Origin |= OriginEnum.Tagged;
+                    Protocol |= ProtocolEnum.Tagged;
                 else
-                    Origin &= ~OriginEnum.Tagged;
+                    Protocol &= ~ProtocolEnum.Tagged;
             }
         }
 
@@ -73,20 +77,17 @@ namespace LiFXbase
         /// </summary>
         public bool Addressable
         {
-            get { return (Origin & OriginEnum.Addressable) == OriginEnum.Addressable; }
+            get { return (Protocol & ProtocolEnum.Addressable) == ProtocolEnum.Addressable; }
             set
             {
                 if (value)
-                    Origin |= OriginEnum.Addressable;
+                    Protocol |= ProtocolEnum.Addressable;
                 else
-                    Origin &= ~OriginEnum.Addressable;
+                    Protocol &= ~ProtocolEnum.Addressable;
             }
         }
 
-        /// <summary>
-        /// uint16_t Protocol number: must be 1024 (decimal)
-        /// </summary>
-        public UInt16 Protocol { get; set; } = 1024;
+        
 
         /// <summary>
         /// uint32_t Source identifier: unique value set by the client, used by responses
@@ -111,7 +112,7 @@ namespace LiFXbase
         /// <summary>
         /// uint64_t	6 byte device address(MAC address) or zero(0) means all devices
         /// </summary>
-        public UInt64 Target { get; set; }
+        public UInt64 Target { get; set; } = 0;
 
 
         /// <summary>
@@ -173,6 +174,12 @@ namespace LiFXbase
         /// </summary>
         public UInt16 MsgType { get; set; }
 
+        public MsgTypeEnum MessageType
+        {
+            get { return (MsgTypeEnum)MsgType; }
+            set { MsgType = (UInt16)value; }
+        }
+
         public UInt16 Reserv4 { get; set; }
 
         #endregion
@@ -182,8 +189,7 @@ namespace LiFXbase
             List<byte> bl = new List<byte>();
             
             bl.AddRange(BitConverter.GetBytes(Size));
-            bl.Add((byte)Origin);
-            bl.AddRange(BitConverter.GetBytes(Protocol));
+            bl.AddRange(BitConverter.GetBytes((UInt16)Protocol));
             bl.AddRange(BitConverter.GetBytes(Source));
             bl.AddRange(BitConverter.GetBytes(Target));
             bl.AddRange(Reserv1);
@@ -199,17 +205,16 @@ namespace LiFXbase
         public static Header FromBytes(byte[] payload)
         {
             Header header = new Header();
-            header.Size = (UInt16)BitConverter.ToInt16(payload, 0);     // 0 - 1
-            header.Origin = (OriginEnum)payload[2];                     // 2
-            header.Protocol = (UInt16)BitConverter.ToInt16(payload, 3); // 3 - 4
-            header.Source = (UInt32)BitConverter.ToInt32(payload, 5);   // 5 - 8
-            header.Target = (UInt64)BitConverter.ToInt64(payload, 9);   // 9 - 16
-            //Reserv1 6 bytes                                           // 17 - 22
-            header.Reserv2 = (ReservEnum)payload[23];                   // 23
-            header.Sequence = payload[24];                              // 24
-            //Reserv3 8 bytes                                           // 25-32
-            header.MsgType = payload[33];                               // 33
-            //Reserv4 2 bytes                                           // 34-35
+            header.Size = (UInt16)BitConverter.ToInt16(payload, 0);             // 0 - 1
+            header.Protocol = (ProtocolEnum)BitConverter.ToInt16(payload, 2);   // 2 - 3
+            header.Source = (UInt32)BitConverter.ToInt32(payload, 4);           // 4 - 7
+            header.Target = (UInt64)BitConverter.ToInt64(payload, 8);           // 8 - 15
+            //Reserv1 6 bytes                                                   // 16 - 21
+            header.Reserv2 = (ReservEnum)payload[22];                           // 22
+            header.Sequence = payload[23];                                      // 23
+            //Reserv3 8 bytes                                                   // 24 - 31
+            header.MsgType = (UInt16)BitConverter.ToInt16(payload, 32);         // 32 - 33
+            //Reserv4 2 bytes                                                   // 34 - 35
             return header;
         }
     }

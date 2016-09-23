@@ -11,7 +11,7 @@ namespace LiFXbase
 {
     public class LiFXNetService
     {
-
+        int hostPort = 56700;
         public event EventHandler<UdpReceiveResult> ReceivedPacket;
 
         public LiFXNetService()
@@ -25,11 +25,14 @@ namespace LiFXbase
             {
                 if (/*ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||*/ ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet) 
                 {
-                    
+                    //var x = ni.GetPhysicalAddress();
+                    //string s = x.ToString();
+                    //byte[] phaBytes = x.GetAddressBytes();
                     foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
+                            
                             HostIP = ip.Address;
                         }
                     }
@@ -42,10 +45,14 @@ namespace LiFXbase
 
         public void SendMessage(IPAddress ip, byte[] messagePacket)
         {
-            var udpClient = new UdpClient(new IPEndPoint(ip, 56700));
+            var udpClient = new UdpClient(new IPEndPoint(ip, hostPort));
             udpClient.Send(messagePacket, messagePacket.Length);
         }
 
+        public void DiscoverDevices()
+        {
+            Header discoverHeader;
+        }
 
         async void UDPListener()
         {

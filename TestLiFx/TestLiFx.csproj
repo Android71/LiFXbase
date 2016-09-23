@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AA487F6E-7153-436A-877C-AD26254E8588}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{C7F5DA7C-DBF1-423C-B33D-195A3476E7B3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LiFXbase</RootNamespace>
-    <AssemblyName>LiFXbase</AssemblyName>
+    <RootNamespace>TestLiFx</RootNamespace>
+    <AssemblyName>TestLiFx</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,13 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Network\LiFXNetService.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="MessageType.cs" />
-    <Compile Include="Network\LiFX_endPoint.cs" />
+    <Compile Include="TestLiFX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Network\LiFXControlChannel.cs" />
-    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LiFXbase.csproj">
+      <Project>{aa487f6e-7153-436a-877c-ad26254e8588}</Project>
+      <Name>LiFXbase</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
