@@ -12,6 +12,10 @@ namespace LiFXbase
     public class LiFXNetService
     {
         int hostPort = 56700;
+        IPAddress broadCastIP;
+        UdpClient udpClient;
+
+
         public event EventHandler<UdpReceiveResult> ReceivedPacket;
 
         public LiFXNetService()
@@ -25,19 +29,21 @@ namespace LiFXbase
             {
                 if (/*ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||*/ ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet) 
                 {
-                    //var x = ni.GetPhysicalAddress();
-                    //string s = x.ToString();
-                    //byte[] phaBytes = x.GetAddressBytes();
                     foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            
-                            HostIP = ip.Address;
+
+                            if (ip.Address.ToString().StartsWith("192"))
+                                HostIP = ip.Address;
+                            IPAddress mask = ip.IPv4Mask;
+                            broadCastIP = GetBroadCastIP(HostIP, mask);
                         }
                     }
                 }
             }
+
+            Task.Run(() => UDPListener());
             
         }
 
@@ -49,6 +55,28 @@ namespace LiFXbase
             udpClient.Send(messagePacket, messagePacket.Length);
         }
 
+        public void SendBroadCastMessage(byte[] messagePacket)
+        {
+            IPAddress ip = IPAddress.Parse("192.168.1.255");
+            //var udpClient = new UdpClient(new IPEndPoint(HostIP, hostPort));
+            //var udpClient = new UdpClient(new IPEndPoint(broadCastIP, hostPort));
+            udpClient.EnableBroadcast = true;
+            udpClient.Send(messagePacket, messagePacket.Length, new IPEndPoint(ip, 56700));
+        }
+
+
+        IPAddress GetBroadCastIP(IPAddress host, IPAddress mask)
+        {
+            byte[] broadcastIPBytes = new byte[4];
+            byte[] hostBytes = host.GetAddressBytes();
+            byte[] maskBytes = mask.GetAddressBytes();
+            for (int i = 0; i < 4; i++)
+            {
+                broadcastIPBytes[i] = (byte)(hostBytes[i] | (byte)~maskBytes[i]);
+            }
+            return new IPAddress(broadcastIPBytes);
+        }
+
         public void DiscoverDevices()
         {
             Header discoverHeader;
@@ -56,7 +84,11 @@ namespace LiFXbase
 
         async void UDPListener()
         {
-            var udpClient = new UdpClient(new IPEndPoint(HostIP, 56700));
+            byte[] headerPacket = new byte[36];
+            Header hdr;
+            byte[] mac;
+            Console.WriteLine("UDP Listener started;");
+            udpClient = new UdpClient(new IPEndPoint(HostIP, 56700));
 
             while (true)
             {
@@ -65,7 +97,15 @@ namespace LiFXbase
                 {
                     if (udpResult.RemoteEndPoint.Port == 56700)
                     {
-                        OnReceivedPacket(udpResult);
+                        
+                        Console.WriteLine($"Packet received Length {udpResult.Buffer.Length} IP{udpResult.RemoteEndPoint.Address} Port{udpResult.RemoteEndPoint.Port}");
+                        if (udpResult.Buffer.Length == 41)
+                        {
+                            Array.Copy(udpResult.Buffer, headerPacket, 36);
+                            hdr = Header.FromBytes(headerPacket);
+                            mac = BitConverter.GetBytes(hdr.Target);
+                        }
+                        //OnReceivedPacket(udpResult);
                     }
                 }
             }
