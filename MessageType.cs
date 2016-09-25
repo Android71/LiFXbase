@@ -61,7 +61,7 @@ namespace LiFXbase
     public abstract class PayloadPart
     {
         public virtual byte[] GetBytes() { return null; }
-        public virtual PayloadPart FromBytes(byte[] payload) { return null; }
+        //public virtual PayloadPart FromBytes(byte[] payload) { return null; }
     }
 
     #region Device request payloads
@@ -85,7 +85,7 @@ namespace LiFXbase
             return BitConverter.GetBytes(Level);
         }
 
-        public override PayloadPart FromBytes(byte[] payload)
+        public static SetPower FromBytes(byte[] payload)
         {
             return new SetPower(BitConverter.ToInt16(payload, 0));
         }
@@ -123,7 +123,7 @@ namespace LiFXbase
             return Label;
         }
 
-        public override PayloadPart FromBytes(byte[] payload)
+        public static SetLabel FromBytes(byte[] payload)
         {
             return new SetLabel(payload);
         }
@@ -149,10 +149,10 @@ namespace LiFXbase
         /// </summary>
         public uint Port { get; set; }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateService(payload[0], (uint)BitConverter.ToInt32(payload, 1));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateService(payload[0], (uint)BitConverter.ToInt32(payload, 1));
+        //}
     }
 
     public class StateHostInfo : PayloadPart
@@ -184,12 +184,12 @@ namespace LiFXbase
         // signed 16-bit integer
         public short Reserv { get; set; }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateHostInfo(BitConverter.ToSingle(payload, 0), 
-                                    (uint)BitConverter.ToInt32(payload, 4),
-                                    (uint)BitConverter.ToInt32(payload, 8));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateHostInfo(BitConverter.ToSingle(payload, 0), 
+        //                            (uint)BitConverter.ToInt32(payload, 4),
+        //                            (uint)BitConverter.ToInt32(payload, 8));
+        //}
     }
 
     public class StateHostFirmware : PayloadPart
@@ -213,33 +213,33 @@ namespace LiFXbase
         /// firmware version
         /// </summary>
         public uint Version { get; set; }
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateHostFirmware((ulong)BitConverter.ToInt32(payload, 0),
-                                         (uint)BitConverter.ToInt32(payload, 15));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateHostFirmware((ulong)BitConverter.ToInt32(payload, 0),
+        //                                 (uint)BitConverter.ToInt32(payload, 15));
+        //}
     }
 
     public class StateWifiInfo : StateHostInfo
     {
         public StateWifiInfo(float signal, uint tx, uint rx) : base(signal, tx, rx) { }
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateWifiInfo(BitConverter.ToSingle(payload, 0),
-                                    (uint)BitConverter.ToInt32(payload, 4),
-                                    (uint)BitConverter.ToInt32(payload, 8));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateWifiInfo(BitConverter.ToSingle(payload, 0),
+        //                            (uint)BitConverter.ToInt32(payload, 4),
+        //                            (uint)BitConverter.ToInt32(payload, 8));
+        //}
     }
 
     public class StateWifiFirmware : StateHostFirmware
     {
         public StateWifiFirmware(ulong buildTime, uint version) : base(buildTime, version) { }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateWifiFirmware((ulong)BitConverter.ToInt32(payload, 0),
-                                         (uint)BitConverter.ToInt32(payload, 15));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateWifiFirmware((ulong)BitConverter.ToInt32(payload, 0),
+        //                                 (uint)BitConverter.ToInt32(payload, 15));
+        //}
     }
 
     public class StatePower : PayloadPart
@@ -254,11 +254,11 @@ namespace LiFXbase
         /// Currently only 0 and 65535 are supported.
         /// </summary>
         public short Level { get; set; }
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StatePower(BitConverter.ToInt16(payload, 0));
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StatePower(BitConverter.ToInt16(payload, 0));
                                    
-        }
+        //}
     }
 
     public class StateLabel : PayloadPart
@@ -277,10 +277,10 @@ namespace LiFXbase
         public string LabelStr
         { get { return Encoding.UTF8.GetString(Label); } }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new SetLabel(payload);
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new SetLabel(payload);
+        //}
     }
 
     public class StateVersion : PayloadPart
@@ -306,12 +306,12 @@ namespace LiFXbase
         /// </summary>
         public uint Version { get; set; }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateVersion((uint)BitConverter.ToInt32(payload, 0),
-                                    (uint)BitConverter.ToInt32(payload, 4),
-                                    (uint)BitConverter.ToInt32(payload, 8));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateVersion((uint)BitConverter.ToInt32(payload, 0),
+        //                            (uint)BitConverter.ToInt32(payload, 4),
+        //                            (uint)BitConverter.ToInt32(payload, 8));
+        //}
     }
 
 
@@ -338,12 +338,12 @@ namespace LiFXbase
         /// </summary>
         public ulong DownTime { get; set; }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            return new StateInfo((ulong)BitConverter.ToInt64(payload, 0),
-                                (ulong)BitConverter.ToInt64(payload, 8),
-                                (ulong)BitConverter.ToInt64(payload, 15));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    return new StateInfo((ulong)BitConverter.ToInt64(payload, 0),
+        //                        (ulong)BitConverter.ToInt64(payload, 8),
+        //                        (ulong)BitConverter.ToInt64(payload, 15));
+        //}
     }
 
     public class StateLocation : PayloadPart
@@ -367,16 +367,16 @@ namespace LiFXbase
         /// last updated time in nanoseconds since epoch
         /// </summary>
         public ulong UpdatedAt { get; set; }
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            byte[] location = new byte[16];
-            Array.Copy(payload, 0, location, 0, 16);
-            byte[] label = new byte[32];
-            Array.Copy(payload, 16, label, 0, 32);
-            return new StateLocation(location,
-                                     label,
-                                     (ulong)BitConverter.ToInt64(payload, 48));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    byte[] location = new byte[16];
+        //    Array.Copy(payload, 0, location, 0, 16);
+        //    byte[] label = new byte[32];
+        //    Array.Copy(payload, 16, label, 0, 32);
+        //    return new StateLocation(location,
+        //                             label,
+        //                             (ulong)BitConverter.ToInt64(payload, 48));
+        //}
     }
 
     public class StateGroup : PayloadPart
@@ -399,16 +399,16 @@ namespace LiFXbase
         /// </summary>
         public ulong UpdatedAt { get; set; }
 
-        public override PayloadPart FromBytes(byte[] payload)
-        {
-            byte[] group = new byte[16];
-            Array.Copy(payload, 0, group, 0, 16);
-            byte[] label = new byte[32];
-            Array.Copy(payload, 16, label, 0, 32);
-            return new StateGroup(group,
-                                     label,
-                                     (ulong)BitConverter.ToInt64(payload, 48));
-        }
+        //public override PayloadPart FromBytes(byte[] payload)
+        //{
+        //    byte[] group = new byte[16];
+        //    Array.Copy(payload, 0, group, 0, 16);
+        //    byte[] label = new byte[32];
+        //    Array.Copy(payload, 16, label, 0, 32);
+        //    return new StateGroup(group,
+        //                             label,
+        //                             (ulong)BitConverter.ToInt64(payload, 48));
+        //}
     }
 
     public class EchoResponse
@@ -537,17 +537,24 @@ namespace LiFXbase
         //label string, size: 32 bytes
         public byte[] Label { get; set; }
 
+        public string LabelStr
+        {
+            get { return Encoding.UTF8.GetString(Label, 0, 32); }
+        }
+
+        //string s = System.Text.Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+
         public UInt64 Reserv2 { get; set; }
 
-        public override PayloadPart FromBytes(byte[] payload)
+        public static State FromBytes(byte[] payload)
         {
             byte[] label = new byte[32];
             Array.Copy(payload, 12, label, 0, 32);
-            return new State((ushort)BitConverter.ToInt16(payload, 0),
-                             (ushort)BitConverter.ToInt16(payload, 2),
-                             (ushort)BitConverter.ToInt16(payload, 4),
-                             (ushort)BitConverter.ToInt16(payload, 6),
-                             (ushort)BitConverter.ToInt16(payload, 12),
+            return new State((UInt16)BitConverter.ToInt16(payload, 0),
+                             (UInt16)BitConverter.ToInt16(payload, 2),
+                             (UInt16)BitConverter.ToInt16(payload, 4),
+                             (UInt16)BitConverter.ToInt16(payload, 6),
+                             (UInt16)BitConverter.ToInt16(payload, 10),
                             label
                             );
         }
@@ -556,7 +563,19 @@ namespace LiFXbase
 
     public class StateBulbPower
     {
-        public short Level { get; set; }
+        public StateBulbPower(UInt16 level)
+        {
+            Level = level;
+        }
+        public UInt16 Level { get; set; }
+
+        public static StateBulbPower FromBytes(byte[] payload)
+        {
+            return new StateBulbPower((ushort)BitConverter.ToInt16(payload, 0));
+                             
+                            
+        }
+
     }
 
     #endregion

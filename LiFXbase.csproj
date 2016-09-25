@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LE_Entry.cs" />
     <Compile Include="Network\LiFXNetService.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageType.cs" />
