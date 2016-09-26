@@ -24,7 +24,6 @@ namespace LiFXbase
 
         public string MacAddress
         {
-            
             get
             {
                 byte[] mac = new byte[6];

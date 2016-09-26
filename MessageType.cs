@@ -24,14 +24,14 @@ namespace LiFXbase
         GetPower = 20,
         // Set device power level.
         // Zero implies standby and non-zero sets a corresponding power draw level. 
-        // Currently only 0 and 65535 are supported.
-        // payload unsigned 16-bit integer
+        // Currently only 0 and 65535 are supported (PowerOn/PowerOff).
+        // payload - unsigned 16-bit integer
         SetPower = 21,
             StatePower = 22,
 
         GetLabel = 23,
         //Set the device label text.
-        // payload string, size: 32 bytes
+        // payload - string, size: 32 bytes
         // string is a fixed-length field, which is not null-terminated 
         SetLabel = 24,
             StateLabel = 25,
@@ -50,7 +50,7 @@ namespace LiFXbase
 
         Get = 101,
         SetColor = 102,
-        State = 107,
+            State = 107,
 
         GetBulbPower = 116,
         SetBulbPower = 117,
