@@ -71,6 +71,7 @@ namespace LiFXbase
             udpClient.Send(GetServicePacket(), 36, new IPEndPoint(broadCastIP, 56700));
         }
 
+        public bool StopParse = false;
 
         IPAddress GetBroadCastIP(IPAddress host, IPAddress mask)
         {
@@ -100,63 +101,70 @@ namespace LiFXbase
             while (true)
             {
                 UdpReceiveResult udpResult = await udpClient.ReceiveAsync();
-                if (udpResult.Buffer.Length > 0)
+
+                if (!StopParse)
                 {
-                    if (udpResult.RemoteEndPoint.Port == 56700)
+                    if (udpResult.Buffer.Length > 0)
                     {
-
-
-                        if (udpResult.Buffer.Length >= 36)
+                        if (udpResult.RemoteEndPoint.Port == 56700)
                         {
-                            MsgTypeEnum msgType = (MsgTypeEnum)BitConverter.ToInt16(udpResult.Buffer, 32);
-                            if (msgType != MsgTypeEnum.GetService)
+
+
+                            if (udpResult.Buffer.Length >= 36)
                             {
-                                Array.Copy(udpResult.Buffer, headerPacket, 36);
-                                header = Header.FromBytes(headerPacket);
-                                mac = BitConverter.GetBytes(header.Target);
-
-                                if (msgType == MsgTypeEnum.StateService)
+                                MsgTypeEnum msgType = (MsgTypeEnum)BitConverter.ToInt16(udpResult.Buffer, 32);
+                                if (msgType != MsgTypeEnum.GetService)
                                 {
-                                    Console.WriteLine();
-                                    Console.WriteLine($"Payload Length: {udpResult.Buffer.Length - 36}");
-                                    Console.WriteLine($"Type: {header.MessageType}");
-                                    Console.WriteLine($"IP: {udpResult.RemoteEndPoint.Address}");
-                                    Console.WriteLine($"Port: {udpResult.RemoteEndPoint.Port}");
-                                    Console.WriteLine($"MAC: {MacStr(header.Target)}");
-                                    if (LE_EntryList.FirstOrDefault(p => p.MacUInt64 == header.Target) == null)
-                                        LE_EntryList.Add(new LE_Entry(new LiFxControlChannel(this.udpClient, new LiFX_EndPoint(udpResult.RemoteEndPoint.Address, header.Target)), header.Target));
+                                    Array.Copy(udpResult.Buffer, headerPacket, 36);
+                                    header = Header.FromBytes(headerPacket);
+                                    mac = BitConverter.GetBytes(header.Target);
 
-                                }
-                                else
-                                {
-                                    LE_Entry le_Entry = LE_EntryList.FirstOrDefault(p => p.MacUInt64 == header.Target);
-                                    
-                                    if (le_Entry != null)
+                                    if (msgType == MsgTypeEnum.StateService)
                                     {
-                                        LiFxControlChannel targetChannel = le_Entry.Channel;
-                                        byte[] payload = new byte[udpResult.Buffer.Length - 36];
-                                        Array.Copy(udpResult.Buffer, 36, payload, 0, udpResult.Buffer.Length - 36);
+                                        Console.WriteLine();
+                                        Console.WriteLine(DateTime.Now.ToString());
+                                        Console.WriteLine($"Payload Length: {udpResult.Buffer.Length - 36}");
+                                        Console.WriteLine($"Type: {header.MessageType}");
+                                        Console.WriteLine($"IP: {udpResult.RemoteEndPoint.Address}");
+                                        Console.WriteLine($"Port: {udpResult.RemoteEndPoint.Port}");
+                                        Console.WriteLine($"MAC: {MacStr(header.Target)}");
+                                        if (LE_EntryList.FirstOrDefault(p => p.MacUInt64 == header.Target) == null)
+                                            LE_EntryList.Add(new LE_Entry(new LiFxControlChannel(this.udpClient, new LiFX_EndPoint(udpResult.RemoteEndPoint.Address, header.Target)), header.Target));
+                                        else
+                                            Console.WriteLine("Повторный пакет");
 
-                                        switch (msgType)
+                                    }
+                                    else
+                                    {
+                                        LE_Entry le_Entry = LE_EntryList.FirstOrDefault(p => p.MacUInt64 == header.Target);
+
+                                        if (le_Entry != null)
                                         {
-                                            case MsgTypeEnum.State:
-                                                var x = State.FromBytes(payload);
-                                                targetChannel.State = x;
-                                                //targetChannel.State = State.FromBytes(payload);
-                                                Console.WriteLine();
-                                                Console.WriteLine($"Hue: {x.Hue}");
-                                                Console.WriteLine($"Saturation: {x.Saturation}");
-                                                Console.WriteLine($"Brightness: {x.Brightness}");
-                                                Console.WriteLine($"Kelvin: {x.Kelvin}");
-                                                Console.WriteLine($"Label {x.LabelStr}");
-                                                Console.WriteLine($"Power {x.Power}");
-                                                break;
+                                            LiFxControlChannel targetChannel = le_Entry.Channel;
+                                            byte[] payload = new byte[udpResult.Buffer.Length - 36];
+                                            Array.Copy(udpResult.Buffer, 36, payload, 0, udpResult.Buffer.Length - 36);
+
+                                            switch (msgType)
+                                            {
+                                                case MsgTypeEnum.State:
+                                                    var x = State.FromBytes(payload);
+                                                    targetChannel.State = x;
+                                                    //targetChannel.State = State.FromBytes(payload);
+                                                    Console.WriteLine();
+                                                    Console.WriteLine($"Hue: {x.Hue}");
+                                                    Console.WriteLine($"Saturation: {x.Saturation}");
+                                                    Console.WriteLine($"Brightness: {x.Brightness}");
+                                                    Console.WriteLine($"Kelvin: {x.Kelvin}");
+                                                    Console.WriteLine($"Label {x.LabelStr}");
+                                                    Console.WriteLine($"Power {x.Power}");
+                                                    break;
+                                            }
                                         }
                                     }
                                 }
                             }
+                            //OnReceivedPacket(udpResult);
                         }
-                        //OnReceivedPacket(udpResult);
                     }
                 }
             }

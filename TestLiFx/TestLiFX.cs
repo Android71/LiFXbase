@@ -17,11 +17,17 @@ namespace TestLiFx
         static void Main(string[] args)
         {
             LiFXNetService service = new LiFXNetService();
-            Console.ReadLine();
+            Thread.Sleep(500);
+            Console.WriteLine($"Обнаружено {service.LE_EntryList.Count} лампы");
+            //service.StopParse = true;
+            
             while (true)
             {
+                Console.ReadLine();
+                Console.WriteLine("GetState");
                 service.LE_EntryList[0].Channel.Get();
-                Thread.Sleep(1000);
+                service.LE_EntryList[1].Channel.Get();
+                //Thread.Sleep(1000);
             }
         }
 
