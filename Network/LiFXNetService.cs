@@ -58,8 +58,33 @@ namespace LiFXbase
 
         public void SendMessage(IPAddress ip, byte[] messagePacket)
         {
-            var udpClient = new UdpClient(new IPEndPoint(ip, hostPort));
-            udpClient.Send(messagePacket, messagePacket.Length);
+            //var udpClient = new UdpClient(new IPEndPoint(ip, hostPort));
+            udpClient.Send(messagePacket, messagePacket.Length, new IPEndPoint(ip, 56700));
+        }
+
+        public void SetColor(double hue, double saturation, double lightness, int lightIx, uint source)
+        {
+            double[] hsb = Utils.HSL2HSB(hue, saturation, lightness);
+            // нормирование значений
+            // Hue: range 0 to 65535
+            // Saturation: range 0 to 65535
+            // Brightness: range 0 to 65535
+            // Kelvin: range 2500° (warm) to 9000° (cool)
+            UInt16 Hue = (UInt16)((hsb[0] * 65535)/360.0);
+            //Console.WriteLine($"HueUint16 {Hue}");
+            UInt16 Sat = (UInt16)(hsb[1] * 65535);
+            UInt16 Bri = (UInt16)(hsb[2] * 65535);
+            SetColor payload = new SetColor(Hue, Sat, Bri, 2500, 0);
+            Message msg = new Message();
+            msg.Header.Target = LE_EntryList[lightIx].MacUInt64;
+            msg.Header.Tagged = false;
+            msg.Header.Addressable = true;
+            msg.Header.Res_required = false;
+            msg.Header.Source = source;
+            msg.Header.MessageType = MsgTypeEnum.SetColor;
+            msg.Payload = payload;
+            SendMessage(LE_EntryList[lightIx].Channel.LE_EndPoint.IPAddress, msg.RawMessage);
+
         }
 
         void SendGetService()

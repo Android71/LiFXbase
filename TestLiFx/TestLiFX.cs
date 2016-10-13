@@ -20,14 +20,29 @@ namespace TestLiFx
             Thread.Sleep(500);
             Console.WriteLine($"Обнаружено {service.LE_EntryList.Count} лампы");
             //service.StopParse = true;
-            
+            double hue = 0.0;
+            service.StopParse = true;
+
             while (true)
             {
-                Console.ReadLine();
-                Console.WriteLine("GetState");
-                service.LE_EntryList[0].Channel.Get();
-                service.LE_EntryList[1].Channel.Get();
-                //Thread.Sleep(1000);
+                
+                service.SetColor(hue, 1.0, 0.2, 0, 2000);
+                //Thread.Sleep(10);
+                service.SetColor(hue, 1.0, 0.2, 1, 2010);
+                Thread.Sleep(25);
+                service.SetColor(hue, 1.0, 0.2, 0, 2000);
+                //Thread.Sleep(10);
+                service.SetColor(hue, 1.0, 0.2, 1, 2010);
+                
+                Console.WriteLine($"Hue {hue}");
+                //Console.ReadLine();
+                //Console.WriteLine("GetState");
+                //service.LE_EntryList[0].Channel.Get();
+                //service.LE_EntryList[1].Channel.Get();
+                Thread.Sleep(100);
+                hue += 2.0;
+                if (hue >= 360.0)
+                    hue = 0.0;
             }
         }
 

@@ -432,7 +432,7 @@ namespace LiFXbase
     /// </summary>
     public class SetColor : PayloadPart
     {
-        public SetColor(short hue, short saturation, short brightness, short kelvin, uint duration)
+        public SetColor(UInt16 hue, UInt16 saturation, UInt16 brightness, UInt16 kelvin, UInt16 duration)
         {
             Hue = hue;
             Saturation = saturation;
@@ -442,13 +442,13 @@ namespace LiFXbase
         }
         public byte Reserv { get; set; }
 
-        public short Hue { get; set; }
+        public UInt16 Hue { get; set; }
 
-        public short Saturation { get; set; }
+        public UInt16 Saturation { get; set; }
 
-        public short Brightness { get; set; }
+        public UInt16 Brightness { get; set; }
 
-        public short Kelvin { get; set; }
+        public UInt16 Kelvin { get; set; }
 
         /// <summary>
         /// The color transition time in milliseconds
