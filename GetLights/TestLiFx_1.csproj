@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AA487F6E-7153-436A-877C-AD26254E8588}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{00E49328-0A62-4653-8FDA-3EE4DB783A68}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LiFXbase</RootNamespace>
-    <AssemblyName>LiFXbase</AssemblyName>
+    <RootNamespace>GetLights</RootNamespace>
+    <AssemblyName>GetLights</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,17 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LE_Entry.cs" />
-    <Compile Include="Network\LiFXNetService.cs" />
-    <Compile Include="Network\LiFX_endPoint.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Network\LiFXControlChannel.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="LiFX_Lib\LiFX_Lib.csproj">
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LiFX_Lib\LiFX_Lib.csproj">
       <Project>{84668087-fe0d-4e1d-8ade-bf4789db9fe1}</Project>
       <Name>LiFX_Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LiFX_Service\LiFX_Service.csproj">
+      <Project>{00f2289a-d2b7-4c73-9661-2a10c8e769ff}</Project>
+      <Name>LiFX_Service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

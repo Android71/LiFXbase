@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LiFXbase
+namespace LiFX_Lib
 {
     [Flags]
     public enum ProtocolEnum : UInt16

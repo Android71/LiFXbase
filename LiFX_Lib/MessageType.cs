@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 //https://github.com/LIFX/lifx-protocol-docs/blob/master/messages/device.md#enumerated-types
 
-namespace LiFXbase
+namespace LiFX_Lib
 {
     public enum MsgTypeEnum : UInt16
     {
