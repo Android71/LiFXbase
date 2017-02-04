@@ -20,17 +20,40 @@ namespace LiFX_Lib
             IPAddress broadCastIP = null;
             //UdpClient udpClient = null;
 
-            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            //foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            //{
+            //    if (/*ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||*/ ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+            //        foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+            //            if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+            //                if (ip.Address.ToString().StartsWith("192"))
+            //                {
+            //                    HostIP = ip.Address;
+            //                    IPAddress mask = ip.IPv4Mask;
+            //                    broadCastIP = LiFXUtils.GetBroadCastIP(HostIP, mask);
+            //                }
+            //}
+
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface adapter in interfaces)
             {
-                if (/*ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||*/ ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
-                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
-                            if (ip.Address.ToString().StartsWith("192"))
-                            {
-                                HostIP = ip.Address;
-                                IPAddress mask = ip.IPv4Mask;
-                                broadCastIP = LiFXUtils.GetBroadCastIP(HostIP, mask);
-                            }
+                var ipProps = adapter.GetIPProperties();
+
+                foreach (var ip in ipProps.UnicastAddresses)
+                {
+                    if ((adapter.OperationalStatus == OperationalStatus.Up)
+                        && (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                        /*&& (adapter.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)*/)
+                    {
+                        Console.WriteLine(ip.Address.ToString() + "|" + adapter.Description.ToString());
+                        if (ip.Address.ToString().StartsWith("192"))
+                        {
+                            HostIP = ip.Address;
+                            IPAddress mask = ip.IPv4Mask;
+                            broadCastIP = LiFXUtils.GetBroadCastIP(HostIP, mask);
+                        }
+                    }
+                }
             }
 
             myEndPoint = new IPEndPoint(HostIP, 56700);
@@ -41,7 +64,7 @@ namespace LiFX_Lib
                 byte[] headerPacket = new byte[36];
                 byte[] mac = null;
                 Header header = null;
-                udpClient.Client.ReceiveTimeout = 100;
+                udpClient.Client.ReceiveTimeout = 2000;
 
                 udpClient.Send(LiFXUtils.GetServicePacket, 36, new IPEndPoint(broadCastIP, 56700));
 
