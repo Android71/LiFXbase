@@ -463,6 +463,7 @@ namespace LiFX_Lib
             bl.AddRange(BitConverter.GetBytes(Saturation));
             bl.AddRange(BitConverter.GetBytes(Brightness));
             bl.AddRange(BitConverter.GetBytes(Kelvin));
+            bl.AddRange(BitConverter.GetBytes(Duration));
             return bl.ToArray();
         }
     }
